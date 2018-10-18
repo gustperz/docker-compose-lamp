@@ -11,11 +11,19 @@ services:
       - "443:443"
     links: 
       - mysql
+      - oracle
     volumes: 
       - ${DOCUMENT_ROOT-./www}:/var/www/html
       - ${PHP_INI-./config/php/php.ini}:/usr/local/etc/php/php.ini
       - ${VHOSTS_DIR-./config/vhosts}:/etc/apache2/sites-enabled
       - ${LOG_DIR-./logs/apache2}:/var/log/apache2
+
+  oracle:
+    image: sath89/oracle-xe-11g:latest
+    container_name: 'oracle'
+    ports:
+      - 1521:1521
+      - 8085:8080
 
   mysql:
     build: ./bin/mysql

@@ -44,6 +44,13 @@
                                     mysqli_close($link);
                                     ?>
                                 </li>
+                                <li>
+                                    <?php
+                                    $conn = oci_connect("system", "oracle", "oracle/XE");
+                                    echo oci_server_version($conn);
+                                    oci_close($conn);
+                                    ?>
+                                </li>
                             </ul>
                         </div>
                     </div>
