@@ -4,7 +4,7 @@ RUN apt-get -y update --fix-missing
 RUN apt-get upgrade -y
 
 # Install useful tools
-RUN apt-get -y install apt-utils nano wget dialog
+RUN apt-get -y install apt-utils nano wget dialog unzip git
 
 # Install important libraries
 RUN apt-get -y install --fix-missing apt-utils build-essential git curl libcurl3 libcurl3-dev zip
@@ -18,7 +18,7 @@ RUN docker-php-ext-enable xdebug
 
 # Other PHP7 Extensions
 
-RUN apt-get -y install libmcrypt-dev
+RUN apt-get -y install libaio-dev libmcrypt-dev
 RUN docker-php-ext-install mcrypt
 
 RUN apt-get -y install libsqlite3-dev libsqlite3-0 mysql-client
@@ -44,3 +44,17 @@ RUN docker-php-ext-install -j$(nproc) gd
 
 # Enable apache modules
 RUN a2enmod rewrite headers
+
+# Oracle instantclient
+RUN mkdir /opt/oracle
+ADD oracle/instantclient-basic-linux.x64-12.1.0.2.0.zip /tmp/
+ADD oracle/instantclient-sdk-linux.x64-12.1.0.2.0.zip /tmp/
+RUN unzip /tmp/instantclient-basic-linux.x64-12.1.0.2.0.zip -d /opt/oracle/
+RUN unzip /tmp/instantclient-sdk-linux.x64-12.1.0.2.0.zip -d /opt/oracle/
+
+# install oci8
+RUN ln -s /opt/oracle/instantclient_12_1/libclntsh.so.12.1 /opt/oracle/instantclient_12_1/libclntsh.so
+RUN ln -s /opt/oracle/instantclient_12_1/libocci.so.12.1 /opt/oracle/instantclient_12_1/libocci.so
+RUN echo 'extension=oci8.so' > /usr/local/etc/php/conf.d/oci8.ini
+RUN echo 'instantclient,/opt/oracle/instantclient_12_1' | pecl install oci8
+RUN echo 'export LD_LIBRARY_PATH=/opt/oracle/instantclient_12_1' >> /etc/apache2/envvars

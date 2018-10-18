@@ -4,7 +4,7 @@ services:
   webserver:
     build: 
       context: ./bin/webserver
-    container_name: 'png-webserver'
+    container_name: 'webserver'
     restart: 'always'
     ports:
       - "80:80"
@@ -16,9 +16,10 @@ services:
       - ${PHP_INI-./config/php/php.ini}:/usr/local/etc/php/php.ini
       - ${VHOSTS_DIR-./config/vhosts}:/etc/apache2/sites-enabled
       - ${LOG_DIR-./logs/apache2}:/var/log/apache2
+
   mysql:
     build: ./bin/mysql
-    container_name: 'png-mysql'
+    container_name: 'mysql'
     restart: 'always'
     ports:
       - "3306:3306"
@@ -30,9 +31,10 @@ services:
       MYSQL_DATABASE: png
       MYSQL_USER: png
       MYSQL_PASSWORD: png
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: 'png-phpmyadmin'
+    container_name: 'phpmyadmin'
     links:
       - mysql
     environment:
@@ -42,8 +44,3 @@ services:
       - '8080:80'
     volumes: 
       - /sessions
-  redis:
-    container_name: 'png-redis'
-    image: redis:latest
-    ports:
-      - "6379:6379"
